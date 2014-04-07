@@ -418,7 +418,7 @@ window_copy_key(struct window_pane *wp, struct session *sess, int key)
 	case MODEKEYCOPY_APPENDSELECTION:
 		if (sess != NULL) {
 			window_copy_append_selection(wp, data->numprefix);
-			window_pane_reset_mode(wp);
+//			window_pane_reset_mode(wp);
 			return;
 		}
 		break;
@@ -544,7 +544,7 @@ window_copy_key(struct window_pane *wp, struct session *sess, int key)
 		    (cmd == MODEKEYCOPY_COPYLINE ||
 		    cmd == MODEKEYCOPY_COPYENDOFLINE)) {
 			window_copy_copy_selection(wp, -1);
-			window_pane_reset_mode(wp);
+//			window_pane_reset_mode(wp);
 			return;
 		}
 		break;
@@ -555,14 +555,14 @@ window_copy_key(struct window_pane *wp, struct session *sess, int key)
 	case MODEKEYCOPY_COPYPIPE:
 		if (sess != NULL) {
 			window_copy_copy_pipe(wp, sess, data->numprefix, arg);
-			window_pane_reset_mode(wp);
+//			window_pane_reset_mode(wp);
 			return;
 		}
 		break;
 	case MODEKEYCOPY_COPYSELECTION:
 		if (sess != NULL) {
 			window_copy_copy_selection(wp, data->numprefix);
-			window_pane_reset_mode(wp);
+//			window_pane_reset_mode(wp);
 			return;
 		}
 		break;
@@ -899,7 +899,7 @@ window_copy_mouse(
 				window_copy_redraw_screen(wp);
 			return;
 		}
-		goto reset_mode;
+		goto fake_reset_mode;
 	}
 
 	/* Otherwise if other buttons pressed, start selection and motion. */
@@ -921,6 +921,16 @@ reset_mode:
 		window_copy_copy_selection(wp, -1);
 		window_pane_reset_mode(wp);
 	}
+    return;
+
+fake_reset_mode:
+	s->mode &= ~MODE_MOUSE_BUTTON;
+	s->mode |= MODE_MOUSE_STANDARD;
+	if (sess != NULL) {
+		window_copy_copy_selection(wp, -1);
+	}
+    return;
+
 }
 
 void
